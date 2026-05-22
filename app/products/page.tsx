@@ -55,7 +55,7 @@ async function ProductList({ searchParams }: { searchParams: SearchParams }) {
       if (sort === 'price-desc') return b.price - a.price;
       return 0;
     });
-  const displayProducts = error ? fallbackProducts : products;
+  const displayProducts = (error || !products || products.length === 0) ? fallbackProducts : products;
 
   if (!displayProducts || displayProducts.length === 0) {
     return (

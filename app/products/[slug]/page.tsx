@@ -5,6 +5,7 @@ import AddToCartButton from './_components/AddToCartButton';
 import { ShieldCheck, Truck, RotateCcw, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import { getProductImages } from '@/lib/product-images';
+import { FALLBACK_PRODUCTS } from '@/lib/fallback-products';
 
 export const revalidate = 60; 
 
@@ -15,12 +16,22 @@ export default async function ProductDetailPage({
 }) {
   const resolvedParams = await params;
   
-  const supabase = await createClient();
-  const { data: product } = await supabase
-    .from('products')
-    .select('*, categories(*)')
-    .eq('slug', resolvedParams.slug)
-    .single();
+  let product = null;
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from('products')
+      .select('*, categories(*)')
+      .eq('slug', resolvedParams.slug)
+      .single();
+    product = data;
+  } catch (error) {
+    console.warn("Supabase query failed, falling back to local data.", error);
+  }
+
+  if (!product) {
+    product = FALLBACK_PRODUCTS.find((p) => p.slug === resolvedParams.slug) || null;
+  }
 
   if (!product || !product.is_active) {
     notFound();

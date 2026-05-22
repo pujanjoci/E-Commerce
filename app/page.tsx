@@ -7,16 +7,25 @@ import Skeleton from '@/components/ui/Skeleton';
 import { createClient } from '@/lib/supabase/server';
 
 async function HomeContent() {
-  const supabase = await createClient();
-  const [{ data: categories }, { data: products }] = await Promise.all([
-    supabase.from('categories').select('*').order('name'),
-    supabase
-      .from('products')
-      .select('*, categories(*)')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
-      .limit(4),
-  ]);
+  let categories = null;
+  let products = null;
+
+  try {
+    const supabase = await createClient();
+    const [categoriesRes, productsRes] = await Promise.all([
+      supabase.from('categories').select('*').order('name'),
+      supabase
+        .from('products')
+        .select('*, categories(*)')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(4),
+    ]);
+    categories = categoriesRes.data;
+    products = productsRes.data;
+  } catch (error) {
+    console.warn("Supabase query failed on HomeContent, using local fallbacks.", error);
+  }
 
   return (
     <>
