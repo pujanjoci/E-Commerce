@@ -212,6 +212,324 @@ body {
   100% { transform: scale(1); }
 }
 
+/* ─── Receipt Cart ────────────────────────────────────────── */
+.receipt-card {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+  background: var(--ag-surface);
+  border: 0.5px solid var(--ag-border);
+  border-radius: 7px 7px 0 0;
+  font-family: var(--font-sans);
+  overflow: visible;
+}
+
+.receipt-torn-edge {
+  display: block;
+  width: 100%;
+  height: 12px;
+  position: absolute;
+  bottom: -12px;
+  left: 0;
+  pointer-events: none;
+}
+
+/* Header */
+.receipt-header {
+  padding: 20px 20px 12px;
+}
+
+.receipt-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.receipt-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ag-text-secondary);
+}
+
+.receipt-meta {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ag-text-muted);
+  letter-spacing: 0.02em;
+}
+
+/* Dividers */
+.receipt-divider-dashed {
+  border: none;
+  border-top: 1px dashed var(--ag-border);
+  margin: 0 20px;
+}
+
+.receipt-divider-solid {
+  border: none;
+  border-top: 1.5px solid var(--ag-text-primary);
+  margin: 0 20px;
+  opacity: 0.18;
+}
+
+/* Body / line items */
+.receipt-body {
+  padding: 14px 20px;
+  min-height: 54px;
+}
+
+.receipt-empty {
+  text-align: center;
+  font-size: 13px;
+  color: var(--ag-text-muted);
+  padding: 18px 0;
+}
+
+.receipt-line-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 0;
+  overflow: hidden;
+}
+
+.receipt-icon-tile {
+  position: relative;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: var(--ag-surface-2);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.receipt-item-detail {
+  flex: 1;
+  min-width: 0;
+}
+
+.receipt-item-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.receipt-item-name-block {
+  min-width: 0;
+}
+
+.receipt-item-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--ag-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.receipt-item-variant {
+  display: block;
+  font-size: 11px;
+  color: var(--ag-text-muted);
+  margin-top: 1px;
+}
+
+.receipt-item-price {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ag-text-primary);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.receipt-item-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.receipt-unit-hint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ag-text-muted);
+}
+
+/* Quantity stepper */
+.receipt-qty-stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 0.5px solid var(--ag-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.receipt-qty-btn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  color: var(--ag-text-secondary);
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.receipt-qty-btn:hover {
+  background: var(--ag-surface-2);
+  color: var(--ag-text-primary);
+}
+
+.receipt-qty-btn:active {
+  background: var(--ag-border);
+}
+
+.receipt-qty-value {
+  width: 28px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ag-text-primary);
+  user-select: none;
+}
+
+/* Totals */
+.receipt-totals {
+  padding: 12px 20px 10px;
+}
+
+.receipt-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 3px 0;
+}
+
+.receipt-total-secondary {
+  color: var(--ag-text-secondary);
+}
+
+/* Grand total */
+.receipt-grand-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 12px 20px 16px;
+}
+
+.receipt-grand-total-label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ag-text-primary);
+  letter-spacing: 0.04em;
+}
+
+.receipt-grand-total-value {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ag-text-primary);
+}
+
+/* Stamp-pulse animation — quick scale-up-then-settle */
+.receipt-stamp-pulse {
+  animation: receipt-stamp 200ms ease-out;
+}
+
+@keyframes receipt-stamp {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+/* Checkout button */
+.receipt-checkout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: calc(100% - 40px);
+  margin: 0 20px 20px;
+  padding: 12px 0;
+  border: none;
+  border-radius: 6px;
+  background: var(--ag-text-primary);
+  color: var(--ag-surface);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 120ms ease;
+}
+
+.receipt-checkout-btn:hover {
+  opacity: 0.88;
+}
+
+.receipt-checkout-btn:disabled,
+.receipt-checkout-btn-disabled {
+  background: var(--ag-border);
+  color: var(--ag-text-muted);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Continue button */
+.receipt-continue-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(100% - 40px);
+  margin: 0 20px 20px;
+  padding: 10px 0;
+  border: 0.5px solid var(--ag-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ag-text-secondary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.receipt-continue-btn:hover {
+  background: var(--ag-surface-2);
+  color: var(--ag-text-primary);
+}
+
+.receipt-continue-btn:active {
+  background: var(--ag-border);
+}
+
+
+/* ─── Responsive: full-width on mobile ─────────────────────── */
+@media (max-width: 420px) {
+  .receipt-card {
+    max-width: 100%;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

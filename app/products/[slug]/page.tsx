@@ -6,6 +6,7 @@ import { ShieldCheck, Truck, RotateCcw, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import { getProductImages } from '@/lib/product-images';
 import { FALLBACK_PRODUCTS } from '@/lib/fallback-products';
+import ProductCard from '@/components/store/ProductCard';
 
 export const revalidate = 60; 
 
@@ -37,10 +38,41 @@ export default async function ProductDetailPage({
     notFound();
   }
 
+  // Fetch Recommended Products
+  let recommended: any[] = [];
+  if (product.category_id) {
+    try {
+      const supabase = await createClient();
+      const { data } = await supabase
+        .from('products')
+        .select('*, categories(*)')
+        .eq('is_active', true)
+        .neq('id', product.id)
+        .eq('category_id', product.category_id)
+        .limit(4);
+      if (data && data.length > 0) {
+        recommended = data;
+      }
+    } catch (error) {
+      console.warn("Recommended products query failed.", error);
+    }
+  }
+
+  if (recommended.length === 0) {
+    const categorySlug = product.categories?.slug || '';
+    const sameCategory = FALLBACK_PRODUCTS.filter(
+      (p) => p.id !== product.id && p.categories?.slug === categorySlug
+    );
+    const otherCategories = FALLBACK_PRODUCTS.filter(
+      (p) => p.id !== product.id && p.categories?.slug !== categorySlug
+    );
+    recommended = [...sameCategory, ...otherCategories].slice(0, 4);
+  }
+
   const productImages = getProductImages(product);
 
   return (
-    <div className="min-h-screen bg-[var(--ag-base)]">
+    <div className="min-h-screen bg-[var(--ag-base)] flex flex-col justify-between">
       <nav className="mx-auto max-w-7xl px-4 pb-4 pt-8 sm:px-6 lg:px-8">
         <ol className="flex items-center gap-2 text-sm font-medium text-[var(--ag-text-muted)]">
           <li><Link href="/" className="hover:text-[var(--ag-accent)] transition-colors">Home</Link></li>
@@ -135,7 +167,22 @@ export default async function ProductDetailPage({
         </div>
       </div>
 
-      <div className="section-padding" />
+      {/* Recommended Products */}
+      {recommended.length > 0 && (
+        <section className="border-t border-[var(--ag-border)] bg-[var(--ag-surface)] py-16 px-4 sm:px-6 lg:px-8 mt-16">
+          <div className="mx-auto max-w-7xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--ag-accent)]">Related Pieces</p>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-[var(--ag-text-primary)] mb-8">
+              Complete the space
+            </h2>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
+              {recommended.map((prod) => (
+                <ProductCard key={prod.id} product={prod} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
