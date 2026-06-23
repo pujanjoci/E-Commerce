@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
+import { toast } from 'sonner';
 import {
   CreditCard,
   QrCode,
@@ -160,10 +161,9 @@ export default function DemoPaymentGateway({
   }, [step]);
 
   const generateOtp = useCallback(() => {
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    setOtpCode(code);
     setOtpInputs(Array(6).fill(''));
-    setSrAnnouncement(`New verification code generated and displayed in testing banner: ${code}`);
+    setSrAnnouncement('A new verification code has been resent to your registered device.');
+    toast.success('Verification code resent successfully.');
   }, []);
 
   // Sync default payment method when country changes
@@ -253,18 +253,11 @@ export default function DemoPaymentGateway({
     }
   };
 
-  const handleAutofillOtp = () => {
-    const digits = otpCode.split('');
-    setOtpInputs(digits);
-    setSrAnnouncement('Verification code autofilled.');
-    otpRefs.current[5]?.focus();
-  };
-
   const handleOtpVerify = (e: React.FormEvent) => {
     e.preventDefault();
     const entered = otpInputs.join('');
-    if (entered !== otpCode) {
-      alert('Invalid test OTP code entered. Please type or use autofill.');
+    if (entered.length !== 6) {
+      alert('Please enter a valid 6-digit verification code.');
       return;
     }
 
@@ -785,20 +778,14 @@ export default function DemoPaymentGateway({
             </p>
           </div>
 
-          {/* OTP code announcement banner */}
-          <div className="bg-emerald-500/10 border border-emerald-500/30 p-3.5 rounded-xl text-center space-y-1">
-            <span className="block text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
-              Verification Code (Sent to registered device)
-            </span>
-            <span className="block text-2xl font-mono font-bold tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
-              {otpCode}
-            </span>
-          </div>
+          <p className="text-xs text-[var(--ag-text-secondary)] text-center max-w-[260px] mx-auto">
+            A 6-digit verification code has been sent to your registered device. Please enter it below to complete the authorization.
+          </p>
 
           <form onSubmit={handleOtpVerify} className="space-y-5">
             <div className="space-y-2">
               <label className="block text-xs font-medium text-[var(--ag-text-secondary)] text-center">
-                Enter 6-digit Verification Code
+                Enter Verification Code
               </label>
 
               {/* Grid 6 inputs */}
@@ -822,16 +809,7 @@ export default function DemoPaymentGateway({
               </div>
             </div>
 
-            {/* Test Autofill Button */}
-            <div className="flex flex-col items-center gap-3">
-              <button
-                type="button"
-                onClick={handleAutofillOtp}
-                className="text-xs font-semibold text-[var(--ag-accent)] hover:text-[var(--ag-accent-hover)] hover:underline border border-[var(--ag-accent)]/20 px-3 py-1.5 rounded-lg bg-[var(--ag-accent-muted)]/10 cursor-pointer"
-              >
-                Autofill for testing
-              </button>
-
+            <div className="flex justify-center">
               <div className="flex items-center gap-1.5 text-xs text-[var(--ag-text-secondary)]">
                 <span>Didn't get code?</span>
                 <button
